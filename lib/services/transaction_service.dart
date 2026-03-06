@@ -42,7 +42,7 @@ class TransactionService {
             categories (*)
           ''')
           .eq('user_id', userId)
-          .order('transaction_date', ascending: false)
+          .order('created_at', ascending: false)
           .limit(limit);
 
       return (response as List).map((json) {

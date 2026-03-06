@@ -43,6 +43,137 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
     return sortedGrouped;
   }
 
+  // Build daily summary widget
+  Widget _buildDailySummary(DateTime date, List transactions) {
+    double totalIncome = 0;
+    double totalExpense = 0;
+
+    for (var t in transactions) {
+      if (t.type == 'income') {
+        totalIncome += t.amount;
+      } else {
+        totalExpense += t.amount;
+      }
+    }
+
+    final netAmount = totalIncome - totalExpense;
+    final isNetPositive = netAmount >= 0;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          // Income
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_upward,
+                    size: 16,
+                    color: Colors.green,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Income',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    Text(
+                      '+\$${totalIncome.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Expenses
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_downward,
+                    size: 16,
+                    color: Colors.red,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Expenses',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    Text(
+                      '-\$${totalExpense.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Net Total
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: isNetPositive
+                  ? Colors.green.withOpacity(0.1)
+                  : Colors.red.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '${isNetPositive ? '+' : '-'}\$${netAmount.abs().toStringAsFixed(2)}',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: isNetPositive ? Colors.green : Colors.red,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -295,8 +426,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Date header
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.only(bottom: 8),
                               child: Text(
                                 _formatDate(date),
                                 style: TextStyle(
@@ -306,9 +438,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                 ),
                               ),
                             ),
+
+                            // Daily summary (Income + Expenses + Net)
+                            _buildDailySummary(date, dayTransactions),
+
+                            // Transactions for this day
                             ...dayTransactions.map((transaction) {
                               return Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
+                                padding: const EdgeInsets.only(bottom: 0),
                                 child: TransactionTile(
                                   transaction: transaction,
                                   showTime: true,
@@ -367,10 +504,12 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                                       }
                                     }
                                   },
-
                                 ),
                               );
                             }).toList(),
+
+                            // Add some spacing between date groups
+                            const SizedBox(height: 16),
                           ],
                         );
                       },

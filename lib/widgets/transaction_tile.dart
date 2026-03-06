@@ -80,6 +80,7 @@ class TransactionTile extends StatelessWidget {
       },
       child: ListTile(
         onTap: onTap,
+
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 4,
           vertical: 0,

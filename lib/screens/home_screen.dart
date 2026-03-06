@@ -436,7 +436,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
-                            vertical: 4,
+                            vertical: 0,
                           ),
                           child: TransactionTile(
                             transaction: transaction,

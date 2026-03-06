@@ -10,12 +10,11 @@ import 'package:flutter_riverpod/legacy.dart';
 const supabaseUrl = String.fromEnvironment('supabaseUrl');
 const supabaseAnonKey = String.fromEnvironment('supabaseAnonKey');
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-// Replace with your Supabase anon key
+
   );
 
   runApp(
